@@ -329,10 +329,9 @@ public class BeatSaberCubeGenerator : MonoBehaviour
             GameObject obj = activeCubes[i];
             if (obj != null)
             {
-                Debug.Log($"  {obj.name} Z = {obj.transform.position.z}");
+                // Debug.Log($"  {obj.name} Z = {obj.transform.position.z}");
                 if (obj.transform.position.z < noteDestroyDistance)
                 {
-                    Debug.Log($"test");
                     CubeController controller = obj.GetComponent<CubeController>();
                     if (controller != null)
                     {

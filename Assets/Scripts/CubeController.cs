@@ -262,51 +262,299 @@ public class CubeController : MonoBehaviour
     }
 
 
+    // private void SliceCube(Vector3 slicePosition, Vector3 sliceDirection)
+    // {
+    //     Debug.Log("=== НАЧАЛО РАЗРЕЗА КУБА ===");
+
+    //     // Логируем входные параметры
+    //     Debug.Log($"Позиция разреза: {slicePosition}");
+    //     Debug.Log($"Направление разреза: {sliceDirection} (длина: {sliceDirection.magnitude})");
+    //     Debug.Log($"Позиция куба: {transform.position}");
+    //     Debug.Log($"Вращение куба: {transform.rotation.eulerAngles}");
+    //     Debug.Log($"Масштаб куба: {transform.localScale}");
+
+    //     // Нормаль плоскости = направление удара
+    //     Vector3 planeNormal = sliceDirection.normalized;
+    //     Debug.Log($"Нормаль плоскости после нормализации: {planeNormal} (длина: {planeNormal.magnitude})");
+
+    //     // ДОПОЛНИТЕЛЬНАЯ ДИАГНОСТИКА УГЛОВ
+    //     float angleToY = Vector3.Angle(planeNormal, Vector3.up);
+    //     float angleToZ = Vector3.Angle(planeNormal, Vector3.forward);
+    //     float angleToX = Vector3.Angle(planeNormal, Vector3.right);
+    //     Debug.Log($"Углы нормали: Y={angleToY}°, Z={angleToZ}°, X={angleToX}°");
+
+    //     // Проверяем валидность нормали
+    //     if (planeNormal.magnitude < 0.9f)
+    //     {
+    //         Debug.LogError($"ПРОБЛЕМА: Нормаль слишком короткая! Возможно нулевое направление.");
+    //     }
+
+    //     // Плоскость проходит через куб
+    //     Vector3 planePoint = transform.position;
+    //     Debug.Log($"Точка плоскости (центр куба): {planePoint}");
+
+    //     // Логируем относительные векторы
+    //     Vector3 toSlicePoint = slicePosition - planePoint;
+    //     Debug.Log($"Вектор от центра куба к точке разреза: {toSlicePoint} (длина: {toSlicePoint.magnitude})");
+
+    //     float dotProduct = Vector3.Dot(planeNormal, toSlicePoint.normalized);
+    //     Debug.Log($"Скалярное произведение нормали и направления к точке: {dotProduct}");
+
+    //     // ПРОСТАЯ ВИЗУАЛИЗАЦИЯ - только нормаль и точка
+    //     Debug.DrawRay(planePoint, planeNormal * 3f, Color.red, 5f);
+    //     Debug.DrawRay(slicePosition, Vector3.up * 0.5f, Color.green, 5f); // Точка удара
+
+    //     // Создаём плоскость
+    //     var plane = new EzySlice.Plane(planePoint, planeNormal);
+    //     Debug.Log($"Создана плоскость: точка={planePoint}, нормаль={planeNormal}");
+
+    //     // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: границы куба
+    //     Renderer cubeRenderer = GetComponent<Renderer>();
+    //     if (cubeRenderer != null)
+    //     {
+    //         Bounds bounds = cubeRenderer.bounds;
+    //         Debug.Log($"Границы куба: min={bounds.min}, max={bounds.max}, size={bounds.size}");
+
+    //         // Проверяем пересечение плоскости с границами куба
+    //         bool intersects = PlaneIntersectsBounds(planePoint, planeNormal, bounds);
+    //         Debug.Log($"Плоскость пересекает границы куба: {intersects}");
+    //     }
+
+    //     // Выполняем разрез
+    //     SlicedHull hull = gameObject.Slice(plane, cubeMaterial);
+    //     if (hull == null)
+    //     {
+    //         Debug.LogWarning("РАЗРЕЗ НЕ СРАБОТАЛ! Плоскость, вероятно, не пересекает меш.");
+    //         Debug.LogWarning($"Дополнительная информация:");
+    //         Debug.LogWarning($"- Нормаль: {planeNormal}");
+    //         Debug.LogWarning($"- Точка плоскости: {planePoint}");
+    //         Debug.LogWarning($"- Углы: Y={angleToY}°, Z={angleToZ}°");
+
+    //         // Пробуем альтернативный подход - смещаем точку плоскости
+    //         Debug.Log("Пробуем альтернативный подход со смещенной точкой...");
+    //         Vector3 alternativePoint = slicePosition; // Используем точку удара вместо центра куба
+    //         var alternativePlane = new EzySlice.Plane(alternativePoint, planeNormal);
+    //         hull = gameObject.Slice(alternativePlane, cubeMaterial);
+
+    //         if (hull != null)
+    //         {
+    //             Debug.Log("Альтернативный подход сработал! Используем точку удара.");
+    //             plane = alternativePlane;
+    //         }
+    //     }
+
+    //     if (hull == null)
+    //     {
+    //         Debug.LogError("Разрез не удался даже с альтернативным подходом.");
+    //         return;
+    //     }
+
+    //     Debug.Log("Разрез успешен, создаем части...");
+
+    //     // Создаем верхнюю и нижнюю части
+    //     GameObject upperHull = hull.CreateUpperHull(gameObject, cubeMaterial);
+    //     GameObject lowerHull = hull.CreateLowerHull(gameObject, cubeMaterial);
+
+    //     Debug.Log($"Созданы части: Upper={upperHull != null}, Lower={lowerHull != null}");
+
+    //     if (upperHull != null)
+    //     {
+    //         Debug.Log($"Настройка UpperHull с нормалью: {planeNormal}");
+    //         SetupHull(upperHull, planeNormal);
+
+    //         Renderer upperRenderer = upperHull.GetComponent<Renderer>();
+    //         if (upperRenderer != null)
+    //         {
+    //             Debug.Log($"UpperHull границы: {upperRenderer.bounds}");
+    //             Debug.Log($"UpperHull центр: {upperRenderer.bounds.center}");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("UpperHull не создан!");
+    //     }
+
+    //     if (lowerHull != null)
+    //     {
+    //         Debug.Log($"Настройка LowerHull с нормалью: {-planeNormal}");
+    //         SetupHull(lowerHull, -planeNormal);
+
+    //         Renderer lowerRenderer = lowerHull.GetComponent<Renderer>();
+    //         if (lowerRenderer != null)
+    //         {
+    //             Debug.Log($"LowerHull границы: {lowerRenderer.bounds}");
+    //             Debug.Log($"LowerHull центр: {lowerRenderer.bounds.center}");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("LowerHull не создан!");
+    //     }
+
+    //     // Логируем итоговую информацию перед уничтожением
+    //     if (upperHull != null && lowerHull != null)
+    //     {
+    //         float distanceBetweenParts = Vector3.Distance(
+    //             upperHull.transform.position,
+    //             lowerHull.transform.position
+    //         );
+    //         Debug.Log($"Расстояние между частями: {distanceBetweenParts}");
+    //     }
+
+    //     Debug.Log("Уничтожаем оригинальный куб");
+    //     Destroy(gameObject);
+
+    //     Debug.Log("=== ЗАВЕРШЕНИЕ РАЗРЕЗА КУБА ===");
+    // }
+
+    // // ИСПРАВЛЕННЫЙ МЕТОД - используем стандартную математику плоскости
+    // private bool PlaneIntersectsBounds(Vector3 planePoint, Vector3 planeNormal, Bounds bounds)
+    // {
+    //     // Получаем все 8 вершин куба
+    //     Vector3[] vertices = new Vector3[8];
+    //     vertices[0] = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
+    //     vertices[1] = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
+    //     vertices[2] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
+    //     vertices[3] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
+    //     vertices[4] = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
+    //     vertices[5] = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
+    //     vertices[6] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+    //     vertices[7] = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z);
+
+    //     // Проверяем, есть ли точки по разные стороны плоскости
+    //     bool hasPositive = false;
+    //     bool hasNegative = false;
+
+    //     foreach (Vector3 vertex in vertices)
+    //     {
+    //         // Вычисляем расстояние от точки до плоскости вручную
+    //         float distance = Vector3.Dot(vertex - planePoint, planeNormal);
+
+    //         if (distance > 0.01f) hasPositive = true;
+    //         if (distance < -0.01f) hasNegative = true;
+
+    //         if (hasPositive && hasNegative)
+    //         {
+    //             Debug.Log($"Плоскость пересекает: вершина {vertex} имеет расстояние {distance}");
+    //             return true;
+    //         }
+    //     }
+
+    //     Debug.Log($"Плоскость НЕ пересекает: все вершины по одну сторону");
+    //     return false;
+    // }
+
     private void SliceCube(Vector3 slicePosition, Vector3 sliceDirection)
     {
-        // Нормаль плоскости = направление удара
+        // 1. ДОБАВИЛ ПРОВЕРКУ И КОРРЕКЦИЮ НОРМАЛИ
+        if (sliceDirection.magnitude < 0.001f)
+        {
+            Debug.LogWarning("Направление разреза слишком мало!");
+            return;
+        }
+
         Vector3 planeNormal = sliceDirection.normalized;
 
-        // Плоскость проходит через куб
+        // 2. ДОБАВИЛ АЛЬТЕРНАТИВНУЮ ТОЧКУ ПЛОСКОСТИ (главное улучшение!)
         Vector3 planePoint = transform.position;
 
-        // Создаём плоскость
+        // Если разрез не работает через центр, пробуем через точку удара
         var plane = new EzySlice.Plane(planePoint, planeNormal);
-
-        // Выполняем разрез
         SlicedHull hull = gameObject.Slice(plane, cubeMaterial);
+
+        if (hull == null)
+        {
+            Debug.Log("Пробуем альтернативную точку плоскости через точку удара...");
+            planePoint = slicePosition; // Используем точку контакта вместо центра
+            plane = new EzySlice.Plane(planePoint, planeNormal);
+            hull = gameObject.Slice(plane, cubeMaterial);
+        }
+
+        // 3. ДОБАВИЛ ЕЩЕ ОДНУ АЛЬТЕРНАТИВУ - смещенную точку
+        if (hull == null)
+        {
+            Debug.Log("Пробуем смещенную точку от центра...");
+            planePoint = transform.position + planeNormal * 0.1f; // Смещаем немного по нормали
+            plane = new EzySlice.Plane(planePoint, planeNormal);
+            hull = gameObject.Slice(plane, cubeMaterial);
+        }
+
         if (hull == null)
         {
             Debug.LogWarning("Разрез не сработал!");
             return;
         }
 
-        SetupHull(hull.CreateUpperHull(gameObject, cubeMaterial), planeNormal);
-        SetupHull(hull.CreateLowerHull(gameObject, cubeMaterial), -planeNormal);
+        // 4. ДОБАВИЛ ПРОВЕРКУ РЕЗУЛЬТАТОВ
+        GameObject upperHull = hull.CreateUpperHull(gameObject, cubeMaterial);
+        GameObject lowerHull = hull.CreateLowerHull(gameObject, cubeMaterial);
+
+        if (upperHull == null || lowerHull == null)
+        {
+            Debug.LogWarning("Одна из частей не создалась!");
+            if (upperHull != null) Destroy(upperHull);
+            if (lowerHull != null) Destroy(lowerHull);
+            return;
+        }
+
+        SetupHull(upperHull, planeNormal);
+        SetupHull(lowerHull, -planeNormal);
 
         Destroy(gameObject);
     }
 
-
-
     private void SetupHull(GameObject hullObj, Vector3 impulseDir)
     {
+        if (hullObj == null)
+        {
+            Debug.LogWarning("SetupHull: передан null объект!");
+            return;
+        }
+
+        // Проверяем и корректируем направление импульса
+        if (impulseDir.magnitude < 0.01f)
+        {
+            Debug.LogWarning($"Направление импульса слишком мало: {impulseDir}. Использую направление вверх.");
+            impulseDir = Vector3.up;
+        }
+
+        // Устанавливаем позицию и вращение
         hullObj.transform.position = transform.position;
         hullObj.transform.rotation = transform.rotation;
         hullObj.transform.localScale = transform.localScale;
 
+        // Добавляем коллайдер
         MeshCollider col = hullObj.AddComponent<MeshCollider>();
         col.convex = true;
 
+        // Добавляем физику
         Rigidbody rb = hullObj.AddComponent<Rigidbody>();
         rb.mass = 1.2f;
-        float forceMultiplier = transform.localScale.magnitude * 0.1f;
-        rb.AddForce((impulseDir + Random.insideUnitSphere * 0.3f).normalized * 3f * forceMultiplier, ForceMode.Impulse);
-        rb.AddTorque(Random.insideUnitSphere * 3f, ForceMode.Impulse);
 
+        // Улучшенный расчет силы
+        float forceMultiplier = transform.localScale.magnitude * 0.1f;
+
+        // Нормализуем направление и добавляем случайность
+        Vector3 forceDirection = impulseDir.normalized;
+        Vector3 randomVariation = Random.insideUnitSphere * 0.3f;
+
+        // Комбинируем основное направление со случайной вариацией
+        Vector3 finalForceDirection = (forceDirection + randomVariation).normalized;
+
+        // Применяем силу
+        float forceAmount = 3f * forceMultiplier;
+        rb.AddForce(finalForceDirection * forceAmount, ForceMode.Impulse);
+
+        // Добавляем вращение (более контролируемое)
+        Vector3 torque = Random.insideUnitSphere * 3f;
+        rb.AddTorque(torque, ForceMode.Impulse);
+
+        // Логируем для отладки
+        Debug.Log($"SetupHull: {hullObj.name}, сила: {finalForceDirection * forceAmount}, вращение: {torque}");
+
+        // Уничтожаем через 5 секунд
         Destroy(hullObj, 5f);
     }
-
     public void OnMiss()
     {
         Destroy(gameObject);
